@@ -1,0 +1,9 @@
+com\mx\forty\controller\TipoEstatusBean.class
+com\mx\forty\TestService.class
+com\mx\forty\service\TipoEstatusService.class
+com\mx\forty\entity\TipoEstatus.class
+com\mx\forty\Prueba.class
+com\mx\forty\TipoEstatusRepository.class
+com\mx\forty\JpaConfig.class
+com\mx\forty\controller\TestController.class
+com\mx\forty\DatabaseConfig.class

@@ -1,0 +1,22 @@
+<jboss-deployment-structure xmlns="urn:jboss:deployment-structure:1.3">
+    <deployment>
+        <dependencies>
+            <!-- Forzar uso de módulos provistos por WildFly -->
+            <module name="javax.api" services="import"/>
+            <module name="javax.el.api" services="import"/>
+            <module name="javax.faces.api" services="import"/>
+            <module name="javax.servlet.api" services="import"/>
+            <module name="javax.persistence.api" services="import"/>
+            <module name="javax.transaction.api" services="import"/>
+        </dependencies>
+
+        <exclusions>
+            <!-- Evitar conflictos con librerías incluidas en el WAR -->
+            <module name="com.sun.el"/>
+            <module name="org.apache.tomcat.el"/>
+            <module name="javax.servlet.api"/>
+            <module name="javax.annotation.api"/>
+            <module name="javax.persistence.api"/>
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>
