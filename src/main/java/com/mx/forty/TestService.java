@@ -11,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mx.forty.entity.TipoEstatus;
 import com.mx.forty.service.TipoEstatusService;
 
-@SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.mx.forty.persistence")
-@EntityScan(basePackages = "com.mx.forty.entity")
 public class TestService extends JpaConfig 	{
 	
 
@@ -23,14 +20,14 @@ public class TestService extends JpaConfig 	{
 	@Autowired
 	TipoEstatusRepository tipoEstatusRepository;
 	
-	@Transactional(transactionManager = "transactionManager")	
+//	@Transactional(transactionManager = "transactionManager")	
 	public void getTipoEstatus() {
 		
 	}
 
-	@Transactional(transactionManager = "transactionManager")
-	public List<TipoEstatus>  findAll() {
-		return tipoEstatus.finAll();
-		
-	}
+//	@Transactional(transactionManager = "transactionManager")
+//	public List<TipoEstatus>  findAll() {
+//		return tipoEstatus.finAll();
+//		
+//	}
 }

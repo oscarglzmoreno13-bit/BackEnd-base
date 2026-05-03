@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -26,13 +27,14 @@ public class DatabaseConfig {
 	    }
 
 	    // 2. Crear manualmente el PlatformTransactionManager
-	    @Bean
-	    public PlatformTransactionManager transactionManager(DataSource dataSource) {
+	 	@Bean(name = "dataSourceTransactionManager")
+	    public PlatformTransactionManager dataSourceTransactionManager(DataSource dataSource) {
 	        // Para JDBC usamos DataSourceTransactionManager
 	        return new DataSourceTransactionManager(dataSource);
 	    }
 	    
-	    @Bean
+	 	@Primary
+	    @Bean(name = "transactionManager")
 	    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
 	        // Para JPA/Hibernate usamos JpaTransactionManager
 	        return new JpaTransactionManager(entityManagerFactory);

@@ -14,24 +14,7 @@ import com.mx.forty.JpaConfig;
 import com.mx.forty.TipoEstatusRepository;
 import com.mx.forty.entity.TipoEstatus;
 
-@Component
 public class TipoEstatusService extends JpaConfig  {
 
-	PlatformTransactionManager transactionManager;
-
-	public TipoEstatusService(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-	
-	public List<TipoEstatus> finAll() {
-		TransactionStatus status = transactionManager.getTransaction(null);
-		try {
-			transactionManager.commit(status);
-		
-		}catch (Exception e) {
-			transactionManager.rollback(status);
-		}
-		return null;
-	}
 
 }

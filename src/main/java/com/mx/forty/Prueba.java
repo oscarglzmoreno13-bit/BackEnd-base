@@ -11,17 +11,17 @@ public class Prueba {
 	
 	public static void find() {
 		
-		tipoEstatus.finAll();
+//		tipoEstatus.finAll();
 	}
 	
 	
 	
 	
-	public static void main(String[] args) {
-		
-		Prueba p = new Prueba(null, null);
-		p.find();
-	}
+//	public static void main(String[] args) {
+//		
+//		Prueba p = new Prueba(null, null);
+//		p.find();
+//	}
 
 	@Autowired
 	public Prueba(TestService test, TipoEstatusService tipoEstatus) {
