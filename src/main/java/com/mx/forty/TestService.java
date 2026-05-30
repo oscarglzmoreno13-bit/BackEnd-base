@@ -18,7 +18,7 @@ public class TestService extends JpaConfig 	{
 	static TipoEstatusService tipoEstatus;
 	
 	@Autowired
-	TipoEstatusRepository tipoEstatusRepository;
+	TipoEstatusRepositoryTst tipoEstatusRepository;
 	
 //	@Transactional(transactionManager = "transactionManager")	
 	public void getTipoEstatus() {

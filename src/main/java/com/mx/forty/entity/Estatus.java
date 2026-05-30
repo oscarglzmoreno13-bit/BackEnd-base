@@ -61,7 +61,7 @@ public class Estatus {
 	private String nombre;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
-	 @JoinColumn(name = "id_tipo_estatus")
+    @JoinColumn(name = "id_tipo_estatus", referencedColumnName = "id_tipo_estatus")
     private TipoEstatus tipoEstatus;
 
 }

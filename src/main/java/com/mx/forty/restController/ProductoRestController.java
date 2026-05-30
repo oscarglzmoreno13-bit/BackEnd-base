@@ -48,5 +48,10 @@ public class ProductoRestController {
 	         throw new IllegalArgumentException(e.getMessage());
 	     }
 	 }
+	 
+	 @GetMapping("/findByIdMarca")
+		public List<ProductoVo> findByIdMarca(@RequestBody Integer idMarca) {
+			return service.findByIdMarca(idMarca);
+		}
 
 }

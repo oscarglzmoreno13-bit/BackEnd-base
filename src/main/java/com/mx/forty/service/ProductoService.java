@@ -14,5 +14,7 @@ public interface ProductoService {
 	public void save(ProductoVo vo);
 	
 	public void deleteProducto(Integer idProducto);
+	
+	public List<ProductoVo>  findByIdMarca(Integer idMarca);
 
 }

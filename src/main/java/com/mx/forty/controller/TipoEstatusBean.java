@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.mx.forty.TipoEstatusRepository;
+import com.mx.forty.TipoEstatusRepositoryTst;
 import com.mx.forty.entity.TipoEstatus;
 
 
@@ -17,7 +17,7 @@ import com.mx.forty.entity.TipoEstatus;
 public class TipoEstatusBean {
 
 	@Autowired
-	private TipoEstatusRepository tipoEstatusRepo;
+	private TipoEstatusRepositoryTst tipoEstatusRepo;
 	private List<TipoEstatus> listaTipoEstatus ;
 	
 	@PostConstruct

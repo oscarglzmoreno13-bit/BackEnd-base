@@ -4,13 +4,20 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.mx.forty.dto.vo.CampaniaVo;
+import com.mx.forty.dto.vo.DetalleConfiguracionVo;
 import com.mx.forty.entity.Campania;
+import com.mx.forty.entity.ConfiguracionVenta;
+import com.mx.forty.entity.DetalleConfiguracionVenta;
 import com.mx.forty.entity.Estatus;
+import com.mx.forty.entity.Producto;
+import com.mx.forty.entity.TipoConfiguracion;
 
 public class Utilerias implements Serializable {
 
@@ -52,5 +59,86 @@ public class Utilerias implements Serializable {
 		campania.setNombre((String) map.get("nombre"));
 		return campania;
 	}
-
+	
+	public static ConfiguracionVenta convertJstonToEntityConfiguracionVta(Map<String, Object> map) {
+		ConfiguracionVenta configuracion = new ConfiguracionVenta();
+		configuracion.setNombre((String) map.get("nombre"));
+		configuracion.setIdConfiguraciónVenta((Integer) map.get("idConfiguracionVenta"));
+		configuracion.setPrecioVenta((Double) map.get("precio"));
+		try {
+			ZonedDateTime zdt = null;
+			zdt =  ZonedDateTime.parse((String) map.get("fechaInicio"), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+			configuracion.setFechaInicio(Date.from(zdt.toInstant()));
+			zdt =  ZonedDateTime.parse((String) map.get("fechaFin"), DateTimeFormatter.ISO_ZONED_DATE_TIME);
+			configuracion.setFechaFin(Date.from(zdt.toInstant()));
+		} catch(Exception e) {
+			configuracion.setFechaInicio(new Date());
+			configuracion.setFechaFin(new Date());
+		}
+		configuracion.setTipoConfiguracion(new TipoConfiguracion());
+		configuracion.getTipoConfiguracion().setIdTipoConfiguracion((Integer) map.get("idTipoConfiguracion"));
+		configuracion.setCampania(new Campania());
+		configuracion.getCampania().setIdCampania((Integer) map.get("idCampania"));
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> lista = (List<Map<String, Object>>) map.get("listaProductos");
+		configuracion.setDetallesConfiguracion(new ArrayList<DetalleConfiguracionVenta>());
+		for (Map<String, Object> detalleMap : lista) {
+			DetalleConfiguracionVenta detalle = convertJsonToEntityDetalleConfiguracion(detalleMap);
+			configuracion.getDetallesConfiguracion().add(detalle);
+		}
+		return configuracion;
+	}
+	
+	public static Map<String, Object> mapconvertEntityConfiguracionVtaToJson(ConfiguracionVenta configuracion) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy, HH:mm");
+		map.put("idConfiguracion", configuracion.getIdConfiguraciónVenta());
+		map.put("nombre", configuracion.getNombre());
+		map.put("nombreCampania", configuracion.getCampania().getNombre());
+		map.put("idCampania", configuracion.getCampania().getIdCampania());
+		map.put("fechaInicio", sdf.format(configuracion.getFechaInicio()));
+		map.put("fechaFin", sdf.format(configuracion.getFechaFin()));
+		map.put("precio", configuracion.getPrecioVenta());
+		map.put("idTipoConfiguracion", configuracion.getTipoConfiguracion().getIdTipoConfiguracion());
+		map.put("ombreTipoConfiguracion", configuracion.getTipoConfiguracion().getNombre());
+		map.put("nombreTipoConfiguracion", configuracion.getTipoConfiguracion().getNombre());
+		List<Map<String, Object>> listaDetalle = new ArrayList<Map<String, Object>>();
+		for (DetalleConfiguracionVenta detalle : configuracion.getDetallesConfiguracion()) {
+			listaDetalle.add(convetEntityDetalleConfiguracionToJson(detalle));
+		}
+		map.put("listaProductos", listaDetalle);
+		return map;
+	}
+	
+	public static DetalleConfiguracionVenta convertJsonToEntityDetalleConfiguracion(Map<String, Object> map) {
+		DetalleConfiguracionVenta detalle = new DetalleConfiguracionVenta();
+		detalle.setIdDetalleConfiguracion((Integer) map.get("idDetalleConfiguracion"));
+		detalle.setCantidad((Integer) map.get("cantidad"));
+		detalle.setProducto(new Producto());
+		detalle.getProducto().setIdProducto((Integer) map.get("idProducto"));
+		return detalle;
+	}
+	
+	public static  Map<String, Object> convetEntityDetalleConfiguracionToJson(DetalleConfiguracionVenta detalle) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("idConfiguracion", detalle.getConfiguracion().getIdConfiguraciónVenta());
+		map.put("cantidad", detalle.getCantidad());
+		map.put("idDetalleConfiguracion",detalle.getIdDetalleConfiguracion() );
+		map.put("nombreProducto",detalle.getProducto().getNombre() );
+		map.put("idProducto", detalle.getProducto().getIdProducto());
+		return map;
+	}
+	
+	public DetalleConfiguracionVo convetEntityDetalleConfiguracionToVo(DetalleConfiguracionVenta detalle) {
+		
+		DetalleConfiguracionVo vo = new DetalleConfiguracionVo();
+		vo.setIdConfiguracion(detalle.getConfiguracion().getIdConfiguraciónVenta());
+		vo.setCantidad(detalle.getCantidad());
+		vo.setIdDetalleConfiguracion(detalle.getIdDetalleConfiguracion());
+		vo.setIdProducto(detalle.getProducto().getIdProducto());
+		vo.setNombreProducto(detalle.getProducto().getNombre());
+		return vo;
+	}
+	
+	
 }

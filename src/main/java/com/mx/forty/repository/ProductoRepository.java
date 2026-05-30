@@ -22,4 +22,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 	
 	@Query("SELECT p  FROM Producto p WHERE p.idProducto= :idProducto")
 	public Optional<Producto> findById(@Param("idProducto") Integer idProducto);
+	
+	@Query("SELECT p  FROM Producto p WHERE p.marca.idMarca = :idMarca and p.estatus.idEstatus = 1")
+	public List<Producto> findByMarca(@Param("idMarca") Integer idMarca);
 }

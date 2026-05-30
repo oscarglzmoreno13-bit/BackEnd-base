@@ -53,7 +53,7 @@ public class CampaniaServiceImpl implements CampaniaService {
 		vo.setFechaInicio(new Date(campania.getFechaInicio().getTime()));
 		vo.setFechaFin(new Date(campania.getFechaFin().getTime()));
 		return vo;
-	}
+	}//509551F66EDF
 
 	@Override
 	public void save(Map<String, Object> json) {

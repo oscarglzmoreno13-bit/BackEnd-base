@@ -109,6 +109,21 @@ public class ProductoServiceImpl implements ProductoService {
 	        throw new RuntimeException("Error al eliminar el producto: " + e.getMessage());
 	    }
 	}
+
+
+	@Override
+	public List<ProductoVo> findByIdMarca(Integer idMarca) {
+		List<ProductoVo> listToReturn = new ArrayList<ProductoVo>();
+		try {
+			List<Producto> lista =  repository.findByMarca(idMarca);
+			for (Producto producto : lista) {
+				listToReturn.add(getEntityToVo(producto));
+			}
+		} catch (Exception e) {
+			 throw new RuntimeException("Error al eliminar el producto: " + e.getMessage());
+		}
+		return listToReturn;
+	}
 	
 
 }
