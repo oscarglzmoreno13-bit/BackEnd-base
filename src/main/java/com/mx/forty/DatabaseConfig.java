@@ -20,7 +20,7 @@ public class DatabaseConfig {
 	    public DataSource dataSource() {
 	        DriverManagerDataSource dataSource = new DriverManagerDataSource();
 	        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-	        dataSource.setUrl("jdbc:mysql://localhost:3306/forty_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC");
+	        dataSource.setUrl("jdbc:mysql://dadtabse-forty.cv6m4gewkqci.us-east-2.rds.amazonaws.com");
 	        dataSource.setUsername("FtyUsr");
 	        dataSource.setPassword("Fg120615@");
 	        return dataSource;
