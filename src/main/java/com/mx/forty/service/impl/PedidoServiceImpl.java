@@ -1,7 +1,11 @@
 package com.mx.forty.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,18 +17,26 @@ import com.mx.forty.dto.vo.MiunicipioBackVo;
 import com.mx.forty.dto.vo.PersonaBackVo;
 import com.mx.forty.dto.vo.TipoFormaPagoBackVo;
 import com.mx.forty.entity.Colonia;
+import com.mx.forty.entity.DireccionPedido;
 import com.mx.forty.entity.Estado;
+import com.mx.forty.entity.Estatus;
 import com.mx.forty.entity.FormaPago;
 import com.mx.forty.entity.Municipio;
+import com.mx.forty.entity.Pedido;
 import com.mx.forty.entity.Persona;
 import com.mx.forty.entity.TipoFormaPago;
+import com.mx.forty.entity.TipoPersona;
 import com.mx.forty.repository.ColoniaRepository;
+import com.mx.forty.repository.DireccionPedidoRepository;
 import com.mx.forty.repository.EstadoRepository;
 import com.mx.forty.repository.FormaPagoRepository;
 import com.mx.forty.repository.MunicipioRepository;
+import com.mx.forty.repository.PedidoRepository;
 import com.mx.forty.repository.PersonaRepository;
 import com.mx.forty.repository.TipoFormaPagoRepository;
 import com.mx.forty.service.PedidoService;
+import com.mx.forty.util.Constantes;
+import com.mx.forty.util.Utilerias;
 
 @Service
 public class PedidoServiceImpl implements PedidoService {
@@ -41,6 +53,10 @@ public class PedidoServiceImpl implements PedidoService {
 	FormaPagoRepository formaPagoRepository;
 	@Autowired
 	PersonaRepository personaRepository;
+	@Autowired
+	DireccionPedidoRepository direccionRepository;
+	@Autowired
+	PedidoRepository pedidoRepository;
 	
 	@Override
 	public List<EstadoBackVo> buscaEstrados() {
@@ -168,6 +184,65 @@ public class PedidoServiceImpl implements PedidoService {
 			lista.add(vo);
 		}
 		return lista;
+	}
+	@Override
+	public Map<String, Object>  savePedido(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		Persona cliente = Utilerias.convertJsonToVoPersonaEntity((Map<String, Object>) map.get("personaPedido"));
+		DireccionPedido direccion = Utilerias.convertJsonToDireccionEntity((Map<String, Object>) map.get("direccionPedido"));
+		Pedido pedido = Utilerias.convertJsonToPedidoEntity((Map<String, Object>) map.get("formaPago"));
+		Persona usuario = new Persona();
+		usuario.setIdPersona((Integer) map.get("ejecutivo"));
+		
+		
+		cliente.setTipoPersona(new TipoPersona());
+		cliente.getTipoPersona().setIdTipoPersona(Constantes.TIPO_PERSONA_CLIENTE);
+		cliente.setEstatus(new Estatus());
+		cliente.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_ACTIVO);
+		
+		Map<String, Object> respuesta = new HashMap<String, Object>();
+		pedido.setFecha(new Date());
+		try {
+			cliente = personaRepository.save(cliente);		
+			direccion =  direccionRepository.save(direccion);		
+			
+			pedido.setCliente(cliente);
+			pedido.setDireccionPedido(direccion);
+			pedido.setEstatus(new Estatus());
+			pedido.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_ACTIVO);
+			pedido.setUsuario(usuario);
+			
+			pedido = pedidoRepository.save(pedido);
+			
+			respuesta.put("idPedido", pedido.getIdPedido());
+			respuesta.put("message", "Pedido Guardado Correctamente");
+			respuesta.put("status", "success");
+		} catch(Exception e) {
+			respuesta.put("idPedido", null);
+			respuesta.put("message", "Pedido NO Generado");
+			respuesta.put("status", "fail");
+		}
+		
+		
+		return respuesta;
+	}
+	@Override
+	public List<Map<String, Object>> findPedidos() {
+		// TODO Auto-generated method stub
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy, HH:mm");
+		List<Pedido> lista = pedidoRepository.findAll();
+		List<Map<String, Object>> lst = new ArrayList<Map<String,Object>>();
+		for (Pedido pedido : lista) {
+			Map<String, Object> ma = new HashMap<String, Object>();
+			ma.put("numPedido", pedido.getIdPedido() );
+			ma.put("fecha", sdf.format(pedido.getFecha()) );
+			ma.put("monto", pedido.getMontoTotal() );
+			ma.put("nombre", pedido.getCliente().getNombre()+" "+pedido.getCliente().getApellidoPat() );
+			ma.put("telefono", pedido.getCliente().getTelefono() );
+			ma.put("estatus", pedido.getEstatus().getNombre());
+			lst.add(ma);
+		}
+		return lst;
 	}
 	
 	

@@ -12,10 +12,16 @@ import java.util.Map;
 
 import com.mx.forty.dto.vo.CampaniaVo;
 import com.mx.forty.dto.vo.DetalleConfiguracionVo;
+import com.mx.forty.dto.vo.PersonaBackVo;
 import com.mx.forty.entity.Campania;
+import com.mx.forty.entity.Colonia;
 import com.mx.forty.entity.ConfiguracionVenta;
 import com.mx.forty.entity.DetalleConfiguracionVenta;
+import com.mx.forty.entity.DireccionPedido;
 import com.mx.forty.entity.Estatus;
+import com.mx.forty.entity.FormaPago;
+import com.mx.forty.entity.Pedido;
+import com.mx.forty.entity.Persona;
 import com.mx.forty.entity.Producto;
 import com.mx.forty.entity.TipoConfiguracion;
 
@@ -138,6 +144,41 @@ public class Utilerias implements Serializable {
 		vo.setIdProducto(detalle.getProducto().getIdProducto());
 		vo.setNombreProducto(detalle.getProducto().getNombre());
 		return vo;
+	}
+	
+	public static Persona convertJsonToVoPersonaEntity(Map<String, Object> map) {
+		Persona persona = new Persona();
+		persona.setIdPersona((Integer) map.get("idPersona"));
+		persona.setNombre((String) map.get("nombre"));
+		persona.setApellidoPat((String) map.get("apePat"));
+		persona.setApellidoMat((String) map.get("apeMat"));
+		persona.setTelefono((String) map.get("telefono"));
+		persona.setMail((String) map.get("correo"));
+		return persona;	
+	}
+	
+	public static DireccionPedido convertJsonToDireccionEntity(Map<String, Object> map) {
+		DireccionPedido direccion = new DireccionPedido();
+		direccion.setIdDireccionPedido((Integer) map.get("idDireccionPedido"));
+		direccion.setCalleUno((String) map.get("calle"));
+		direccion.setEntreCalles((String) map.get("entreCalles"));
+		direccion.setColonia(new Colonia());
+		direccion.getColonia().setIdColonia((Integer) map.get("idColonia"));
+		direccion.setNumeroExterior((String) map.get("numExgterior"));
+		direccion.setNumeroInterior((String) map.get("numInterior"));
+		direccion.setReferencias((String) map.get("referencias"));
+		return direccion;
+	}
+	
+	public static Pedido convertJsonToPedidoEntity(Map<String, Object>map) {
+		Pedido pedido = new Pedido();
+		pedido.setFormaPago(new FormaPago());
+		pedido.getFormaPago().setIdFormaPago((Integer) map.get("idFormaPago"));
+		pedido.setLinkPago((String) map.get("linkPago"));
+		pedido.setMontoTotal((Double) map.get("monto"));
+		pedido.setObservaciones((String) map.get("observaciones"));
+		
+		return pedido;
 	}
 	
 	
