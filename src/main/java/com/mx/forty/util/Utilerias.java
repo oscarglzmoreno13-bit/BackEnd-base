@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.mx.forty.dto.vo.CampaniaVo;
 import com.mx.forty.dto.vo.DetalleConfiguracionVo;
+import com.mx.forty.dto.vo.PagoEcartPayVo;
 import com.mx.forty.dto.vo.PersonaBackVo;
 import com.mx.forty.entity.Campania;
 import com.mx.forty.entity.Colonia;
@@ -179,6 +180,16 @@ public class Utilerias implements Serializable {
 		pedido.setObservaciones((String) map.get("observaciones"));
 		
 		return pedido;
+	}
+	
+	public static PagoEcartPayVo convertMapToPAgoVo(Map<String, Object> map) {
+		PagoEcartPayVo vo = new PagoEcartPayVo();
+		vo.setLastName((String) map.get("lastName"));
+		vo.setMonto((Double) map.get("monto"));
+		vo.setNombre((String) map.get("nombre"));
+		vo.setTelefono((String) map.get("telefono"));
+		vo.setPedidoEcarpay((String) map.get("orderNum"));
+		return vo;
 	}
 	
 	

@@ -7,4 +7,5 @@ public class Constantes {
 	public static final Integer TIPO_PERSONA_USUARIO = 1;
 	public static final Integer TIPO_PERSONA_CLIENTE = 2;
 	public static final Integer ESTATUS_PEDIDO_CREADO = 3;
+	public static final String ESTATUS_VS_ENTREGA = "Efectivo a Contra Entrega";
 }

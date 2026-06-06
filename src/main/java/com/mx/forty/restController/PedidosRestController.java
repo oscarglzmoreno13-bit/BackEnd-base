@@ -84,4 +84,9 @@ public class PedidosRestController {
 		return service.findPedidos();
 	}
 	
+	@PostMapping("/generaOrdenEnvio")
+	public void generaOrdenEnvio(@RequestBody List<Map<String, Object>> listaPagos) {
+		service.generaOrdenEnvio(listaPagos);
+	}
+	
 }

@@ -26,4 +26,5 @@ public interface PedidoService {
 	public List<ColoniaBackVo> findColoniasByCp(String cp);
 	public Map<String, Object> savePedido(Map<String, Object> map);
 	public List<Map<String, Object>> findPedidos();
+	public void generaOrdenEnvio(List<Map<String, Object>> listPedidos);
 }

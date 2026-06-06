@@ -1,7 +1,9 @@
 package com.mx.forty.entity;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -51,6 +54,28 @@ public class Pedido {
 	@Column(name = "numero_guia")
 	private String numeroGuia;
 	
+	@Column(name = "num_orden_pago")
+	private String numOrdenPago;
+	
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	 private List<DetallePedido> detallesPedido;
+	
+	public List<DetallePedido> getDetallesPedido() {
+		return detallesPedido;
+	}
+
+	public void setDetallesPedido(List<DetallePedido> detallesPedido) {
+		this.detallesPedido = detallesPedido;
+	}
+
+	public String getNumOrdenPago() {
+		return numOrdenPago;
+	}
+
+	public void setNumOrdenPago(String numOrdenPago) {
+		this.numOrdenPago = numOrdenPago;
+	}
+
 	@Column(name = "fecha_entrega_apx")
 	private Date fechaEntregaAprox;
 	

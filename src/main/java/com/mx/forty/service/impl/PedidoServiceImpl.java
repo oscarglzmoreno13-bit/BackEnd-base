@@ -1,5 +1,10 @@
 package com.mx.forty.service.impl;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,13 +15,20 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mx.forty.dto.vo.ColoniaBackVo;
 import com.mx.forty.dto.vo.EstadoBackVo;
 import com.mx.forty.dto.vo.FormaPagoBackVo;
 import com.mx.forty.dto.vo.MiunicipioBackVo;
+import com.mx.forty.dto.vo.PagoEcartPayVo;
 import com.mx.forty.dto.vo.PersonaBackVo;
 import com.mx.forty.dto.vo.TipoFormaPagoBackVo;
 import com.mx.forty.entity.Colonia;
+import com.mx.forty.entity.DetalleConfiguracionVenta;
+import com.mx.forty.entity.DetallePedido;
 import com.mx.forty.entity.DireccionPedido;
 import com.mx.forty.entity.Estado;
 import com.mx.forty.entity.Estatus;
@@ -198,7 +210,7 @@ public class PedidoServiceImpl implements PedidoService {
 		cliente.setTipoPersona(new TipoPersona());
 		cliente.getTipoPersona().setIdTipoPersona(Constantes.TIPO_PERSONA_CLIENTE);
 		cliente.setEstatus(new Estatus());
-		cliente.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_ACTIVO);
+		cliente.getEstatus().setIdEstatus(Constantes.ESTATUS_PEDIDO_CREADO);
 		
 		Map<String, Object> respuesta = new HashMap<String, Object>();
 		pedido.setFecha(new Date());
@@ -245,6 +257,126 @@ public class PedidoServiceImpl implements PedidoService {
 		return lst;
 	}
 	
+	@Override
+	public void generaOrdenEnvio(List<Map<String, Object>> listaPagos) {
+		// TODO Auto-generated method stub
+		List<PagoEcartPayVo> listaPAgosVo = new ArrayList<PagoEcartPayVo>();
+		for (Map<String,Object> map : listaPagos) {
+			listaPAgosVo.add(Utilerias.convertMapToPAgoVo(map));
+		}
+		List<Pedido> listaPedidos = pedidoRepository.findPedidosPendientes();
+		List<Pedido> listaRuta = new ArrayList<Pedido>();
+		String nombrePAgo = null;
+		StringBuffer nombrePedido = new StringBuffer("");
+		for (Pedido pedido : listaPedidos) {
+			if(pedido.getFormaPago().getNombre().equals(Constantes.ESTATUS_VS_ENTREGA)) {
+				listaRuta.add(pedido);
+			} else {
+				for (PagoEcartPayVo vo : listaPAgosVo) {
+					if(pedido.getNumOrdenPago()!=null && vo.getPedidoEcarpay()!=null) {
+						if(pedido.getNumOrdenPago().equals(vo.getPedidoEcarpay())) {
+							listaRuta.add(pedido);
+							continue;
+						}
+					} else {
+						nombrePAgo = vo.getNombre()+" "+vo.getLastName();
+						nombrePedido = new StringBuffer("");
+						nombrePedido.append(pedido.getCliente().getNombre()+" ");
+						nombrePedido.append(pedido.getCliente().getApellidoPat()==null?"":pedido.getCliente().getApellidoPat()+ " ");
+						nombrePedido.append(pedido.getCliente().getApellidoMat()==null?"":pedido.getCliente().getApellidoMat());		
+						if((nombrePAgo.equals(nombrePedido.toString()))&& (vo.getTelefono().equals(pedido.getCliente().getTelefono()))) {
+							listaRuta.add(pedido);
+							continue;
+						}
+					}
+					
+				}
+			}
+			generaOrdenesEnvio(listaRuta);
+		}
+	}
+	private void generaOrdenesEnvio(List<Pedido> listaRuta) {
+		// TODO Auto-generated method stub
+		HttpClient client = HttpClient.newHttpClient();
+
+        // 1. Autenticación
+        HttpRequest authRequest = HttpRequest.newBuilder()
+                .uri(URI.create("https://cerebro.techrayo.com/api/rest/auth"))
+                .header("x-api-key", "zdKO6G8.MGxjcu9klgJywGxt5bilS1cDwgNzV/d7")
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> authResponse;
+		try {
+			authResponse = client.send(authRequest, HttpResponse.BodyHandlers.ofString());
+			System.out.println("Auth Status: " + authResponse.statusCode());
+	        System.out.println("Auth Response: " + authResponse.body());
+	        StringBuffer nombrePedido = new StringBuffer();
+	        String token = extraerToken(authResponse.body());
+	        for (Pedido pedido : listaRuta) {
+	        	nombrePedido = new StringBuffer("");
+	        	nombrePedido.append(pedido.getCliente().getNombre()+" ");
+				nombrePedido.append(pedido.getCliente().getApellidoPat()==null?"":pedido.getCliente().getApellidoPat()+ " ");
+				nombrePedido.append(pedido.getCliente().getApellidoMat()==null?"":pedido.getCliente().getApellidoMat());
+	        	
+	        	JsonObject consumidor = new JsonObject();
+	        	consumidor.addProperty("nombre", nombrePedido.toString());
+	        	consumidor.addProperty("calle", pedido.getDireccionPedido().getCalleUno());
+	        	consumidor.addProperty("no_exterior", pedido.getDireccionPedido().getNumeroExterior());
+	        	consumidor.addProperty("colonia", pedido.getDireccionPedido().getColonia().getNombre());
+	        	consumidor.addProperty("ciudad", pedido.getDireccionPedido().getColonia().getMunicipio().getNombre());
+	        	consumidor.addProperty("estado", pedido.getDireccionPedido().getColonia().getMunicipio().getEstado().getNombre());
+	        	consumidor.addProperty("codigo_postal", pedido.getDireccionPedido().getColonia().getCodigoPostal());
+	        	consumidor.addProperty("pais", "Mexico");
+	        	consumidor.addProperty("telefono", pedido.getCliente().getTelefono());
+	        	
+	        	JsonArray productos = new JsonArray();
+	        	for (DetallePedido detallePedido : pedido.getDetallesPedido()) {
+	        		for (DetalleConfiguracionVenta detalleCfg : detallePedido.getConfiguracion().getDetallesConfiguracion()) {
+	        			 JsonObject prod = new JsonObject();
+	 	        	    prod.addProperty("identificador", detalleCfg.getProducto().getNombre());
+	 	        	    prod.addProperty("cantidad", detalleCfg.getCantidad());
+	 	        	    productos.add(prod);
+					}
+	        	   
+	        	}
+	        	
+	        	JsonObject body = new JsonObject();
+	        	body.add("consumidor_destino", consumidor);
+	        	body.add("productos", productos);
+	        	body.addProperty("servicio_rayo", "NACIONAL");
+	        	
+	        	Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	        	String jsonBody = gson.toJson(body);
+	        	HttpRequest orderRequest = HttpRequest.newBuilder()
+	                    .uri(URI.create("https://cerebro.techrayo.com/api/rest/orders"))
+	                    .header("Authorization", "Bearer " + token)
+	                    .header("Content-Type", "application/json")
+	                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
+	                    .build();
+
+	            HttpResponse<String> orderResponse = client.send(orderRequest, 
+	            												HttpResponse.BodyHandlers.ofString());
+	            System.out.println("Order Status: " + orderResponse.statusCode());
+	            System.out.println("Order Response: " + orderResponse.body());
+			}
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    }
+	
+	private String extraerToken(String json) {
+        // Aquí puedes usar una librería como Jackson o Gson
+        // Ejemplo rápido con substring:
+        int start = json.indexOf(":\"") + 2;
+        int end = json.indexOf("\"", start);
+        return json.substring(start, end);
+    }
 	
 	
 	
