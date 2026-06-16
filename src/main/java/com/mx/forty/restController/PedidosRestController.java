@@ -89,4 +89,9 @@ public class PedidosRestController {
 		service.generaOrdenEnvio(listaPagos);
 	}
 	
+	@PostMapping("/updatePedido")
+	public void updatePedido(@RequestBody Map<String, Object> map) {
+		service.updatePedido(map);
+	}
+	
 }

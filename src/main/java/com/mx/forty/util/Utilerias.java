@@ -18,6 +18,7 @@ import com.mx.forty.entity.Campania;
 import com.mx.forty.entity.Colonia;
 import com.mx.forty.entity.ConfiguracionVenta;
 import com.mx.forty.entity.DetalleConfiguracionVenta;
+import com.mx.forty.entity.DetallePedido;
 import com.mx.forty.entity.DireccionPedido;
 import com.mx.forty.entity.Estatus;
 import com.mx.forty.entity.FormaPago;
@@ -192,5 +193,16 @@ public class Utilerias implements Serializable {
 		return vo;
 	}
 	
+	public static List<DetallePedido> convertJsonToDetallePedido(List<Map<String, Object>> lst, Pedido pedido) {
+		List<DetallePedido> lista = new ArrayList<DetallePedido>();
+		for (Map<String,Object> map : lst) {
+			DetallePedido detalle = new DetallePedido();
+			detalle.setConfiguracion(new ConfiguracionVenta());
+			detalle.getConfiguracion().setIdConfiguraciónVenta((Integer) map.get("idConfiguracionVenta"));
+			detalle.setPedido(pedido);
+			lista.add(detalle);
+		}
+		return lista;
+	}
 	
 }

@@ -9,9 +9,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.mx.forty.dto.vo.ProductoVo;
+import com.mx.forty.entity.ConfiguracionVenta;
 import com.mx.forty.entity.Estatus;
 import com.mx.forty.entity.Marca;
 import com.mx.forty.entity.Producto;
+import com.mx.forty.repository.ConfiguracionVentaRepository;
+import com.mx.forty.repository.DetalleComfiguracionVentaRepository;
 import com.mx.forty.repository.ProductoRepository;
 import com.mx.forty.service.ProductoService;
 import com.mx.forty.util.Constantes;
@@ -21,6 +24,10 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Autowired
 	private ProductoRepository repository;
+	@Autowired
+	private DetalleComfiguracionVentaRepository detalleCfgRepository;
+	@Autowired
+	private ConfiguracionVentaRepository configuracionRepository;
 	
 	@Override
 	public List<ProductoVo> findAll() {
@@ -102,6 +109,13 @@ public class ProductoServiceImpl implements ProductoService {
 	        	Producto p = prod.get();
 	        	p.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_INACTIVO);
 	        	repository.save(p);
+	        	
+	        	List<Integer> listaId = detalleCfgRepository.findCfgByProducto(p.getIdProducto());
+	        	for (Integer idCfg : listaId) {
+	        		ConfiguracionVenta configuracion = configuracionRepository.findById(idCfg).get();
+	        		configuracion.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_EN_REVISION);
+	        		configuracionRepository.save(configuracion);
+				}
 	        }
 	    } catch (EmptyResultDataAccessException e) {
 	        throw new IllegalArgumentException("El producto con id " + idProducto + " no existe");

@@ -77,7 +77,13 @@ public class ConfiguracionVentaServiceImpl implements ConfiguracionVentaService 
         Date fechaNormalizada = null;
         
         
-		List<ConfiguracionVenta> listaConfiguracion = repository.findAllActivesByCampania(idCampania);
+		List<ConfiguracionVenta> listaConfiguracion = null;
+		if(idCampania==null || (idCampania!=null && idCampania==0)) {
+			listaConfiguracion = repository.findAllActives();
+		} else {
+			listaConfiguracion = repository.findAllActivesByCampania(idCampania);
+		}
+		
 		List<Map<String, Object>>lista = new ArrayList<Map<String,Object>>();
 		for (ConfiguracionVenta configuracionVenta : listaConfiguracion) {
 			fechaStr = sdf.format(configuracionVenta.getFechaFin());

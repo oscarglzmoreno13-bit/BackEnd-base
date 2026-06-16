@@ -4,8 +4,10 @@ public class Constantes {
 
 	public static final Integer ESTATUS_GRAL_ACTIVO = 1;
 	public static final Integer ESTATUS_GRAL_INACTIVO = 2;
+	public static final Integer ESTATUS_GRAL_EN_REVISION = 5;
 	public static final Integer TIPO_PERSONA_USUARIO = 1;
 	public static final Integer TIPO_PERSONA_CLIENTE = 2;
 	public static final Integer ESTATUS_PEDIDO_CREADO = 3;
+	public static final Integer ESTATUS_PEDIDO_EN_RUTA = 4;
 	public static final String ESTATUS_VS_ENTREGA = "Efectivo a Contra Entrega";
 }

@@ -27,6 +27,7 @@ import com.mx.forty.dto.vo.PagoEcartPayVo;
 import com.mx.forty.dto.vo.PersonaBackVo;
 import com.mx.forty.dto.vo.TipoFormaPagoBackVo;
 import com.mx.forty.entity.Colonia;
+import com.mx.forty.entity.ConfiguracionVenta;
 import com.mx.forty.entity.DetalleConfiguracionVenta;
 import com.mx.forty.entity.DetallePedido;
 import com.mx.forty.entity.DireccionPedido;
@@ -39,6 +40,7 @@ import com.mx.forty.entity.Persona;
 import com.mx.forty.entity.TipoFormaPago;
 import com.mx.forty.entity.TipoPersona;
 import com.mx.forty.repository.ColoniaRepository;
+import com.mx.forty.repository.ConfiguracionVentaRepository;
 import com.mx.forty.repository.DireccionPedidoRepository;
 import com.mx.forty.repository.EstadoRepository;
 import com.mx.forty.repository.FormaPagoRepository;
@@ -69,6 +71,9 @@ public class PedidoServiceImpl implements PedidoService {
 	DireccionPedidoRepository direccionRepository;
 	@Autowired
 	PedidoRepository pedidoRepository;
+	@Autowired
+	ConfiguracionVentaRepository configuracionRepository;
+	
 	
 	@Override
 	public List<EstadoBackVo> buscaEstrados() {
@@ -203,6 +208,10 @@ public class PedidoServiceImpl implements PedidoService {
 		Persona cliente = Utilerias.convertJsonToVoPersonaEntity((Map<String, Object>) map.get("personaPedido"));
 		DireccionPedido direccion = Utilerias.convertJsonToDireccionEntity((Map<String, Object>) map.get("direccionPedido"));
 		Pedido pedido = Utilerias.convertJsonToPedidoEntity((Map<String, Object>) map.get("formaPago"));
+		pedido.setDetallesPedido(Utilerias.convertJsonToDetallePedido((List<Map<String, Object>>) map.get("listaCoonfiguraciones"),pedido));
+		
+//		pedido.setDetallesPedido(getDetallesPedido((List<Map<String, Object>>) map.get("listaCoonfiguraciones"),pedido));
+		
 		Persona usuario = new Persona();
 		usuario.setIdPersona((Integer) map.get("ejecutivo"));
 		
@@ -210,7 +219,7 @@ public class PedidoServiceImpl implements PedidoService {
 		cliente.setTipoPersona(new TipoPersona());
 		cliente.getTipoPersona().setIdTipoPersona(Constantes.TIPO_PERSONA_CLIENTE);
 		cliente.setEstatus(new Estatus());
-		cliente.getEstatus().setIdEstatus(Constantes.ESTATUS_PEDIDO_CREADO);
+		cliente.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_ACTIVO);
 		
 		Map<String, Object> respuesta = new HashMap<String, Object>();
 		pedido.setFecha(new Date());
@@ -221,7 +230,7 @@ public class PedidoServiceImpl implements PedidoService {
 			pedido.setCliente(cliente);
 			pedido.setDireccionPedido(direccion);
 			pedido.setEstatus(new Estatus());
-			pedido.getEstatus().setIdEstatus(Constantes.ESTATUS_GRAL_ACTIVO);
+			pedido.getEstatus().setIdEstatus(Constantes.ESTATUS_PEDIDO_CREADO);
 			pedido.setUsuario(usuario);
 			
 			pedido = pedidoRepository.save(pedido);
@@ -237,6 +246,22 @@ public class PedidoServiceImpl implements PedidoService {
 		
 		
 		return respuesta;
+	}
+	
+	private List<DetallePedido> getDetallesPedido(List<Map<String, Object>> lst, Pedido pedido) {
+		List<DetallePedido> lista = new ArrayList<DetallePedido>();
+		String name = null;
+		for (Map<String,Object> map : lst) {
+			name = (String) map.get("nombreConfig");
+			ConfiguracionVenta config = configuracionRepository.findConfiguracionByName(name.trim());
+			if(config!=null) {
+				DetallePedido detalle = new DetallePedido();
+				detalle.setConfiguracion(config);
+				detalle.setPedido(pedido);
+				lista.add(detalle);
+			} 
+		}
+		return lista;
 	}
 	@Override
 	public List<Map<String, Object>> findPedidos() {
@@ -269,6 +294,11 @@ public class PedidoServiceImpl implements PedidoService {
 		String nombrePAgo = null;
 		StringBuffer nombrePedido = new StringBuffer("");
 		for (Pedido pedido : listaPedidos) {
+			if(pedido.getIdPedido().equals(Integer.valueOf(18)) || pedido.getIdPedido().equals(Integer.valueOf(19))) {
+				System.out.println();
+			} else {
+				continue;
+			}
 			if(pedido.getFormaPago().getNombre().equals(Constantes.ESTATUS_VS_ENTREGA)) {
 				listaRuta.add(pedido);
 			} else {
@@ -284,14 +314,14 @@ public class PedidoServiceImpl implements PedidoService {
 						nombrePedido.append(pedido.getCliente().getNombre()+" ");
 						nombrePedido.append(pedido.getCliente().getApellidoPat()==null?"":pedido.getCliente().getApellidoPat()+ " ");
 						nombrePedido.append(pedido.getCliente().getApellidoMat()==null?"":pedido.getCliente().getApellidoMat());		
-						if((nombrePAgo.equals(nombrePedido.toString()))&& (vo.getTelefono().equals(pedido.getCliente().getTelefono()))) {
+//						if((nombrePAgo.equals(nombrePedido.toString()))&& (vo.getTelefono().equals(pedido.getCliente().getTelefono()))) {
 							listaRuta.add(pedido);
 							continue;
-						}
+//						}
 					}
 					
 				}
-			}
+			}System.out.println();
 			generaOrdenesEnvio(listaRuta);
 		}
 	}
@@ -317,9 +347,10 @@ public class PedidoServiceImpl implements PedidoService {
 	        	nombrePedido.append(pedido.getCliente().getNombre()+" ");
 				nombrePedido.append(pedido.getCliente().getApellidoPat()==null?"":pedido.getCliente().getApellidoPat()+ " ");
 				nombrePedido.append(pedido.getCliente().getApellidoMat()==null?"":pedido.getCliente().getApellidoMat());
-	        	
+	        	System.out.println();
 	        	JsonObject consumidor = new JsonObject();
-	        	consumidor.addProperty("nombre", nombrePedido.toString());
+//	        	consumidor.addProperty("nombre", nombrePedido.toString());
+	        	consumidor.addProperty("nombre", "PRUEBAS");
 	        	consumidor.addProperty("calle", pedido.getDireccionPedido().getCalleUno());
 	        	consumidor.addProperty("no_exterior", pedido.getDireccionPedido().getNumeroExterior());
 	        	consumidor.addProperty("colonia", pedido.getDireccionPedido().getColonia().getNombre());
@@ -333,7 +364,7 @@ public class PedidoServiceImpl implements PedidoService {
 	        	for (DetallePedido detallePedido : pedido.getDetallesPedido()) {
 	        		for (DetalleConfiguracionVenta detalleCfg : detallePedido.getConfiguracion().getDetallesConfiguracion()) {
 	        			 JsonObject prod = new JsonObject();
-	 	        	    prod.addProperty("identificador", detalleCfg.getProducto().getNombre());
+	 	        	    prod.addProperty("identificador", detalleCfg.getProducto().getSku());
 	 	        	    prod.addProperty("cantidad", detalleCfg.getCantidad());
 	 	        	    productos.add(prod);
 					}
@@ -358,6 +389,8 @@ public class PedidoServiceImpl implements PedidoService {
 	            												HttpResponse.BodyHandlers.ofString());
 	            System.out.println("Order Status: " + orderResponse.statusCode());
 	            System.out.println("Order Response: " + orderResponse.body());
+	            pedido.getEstatus().setIdEstatus(Constantes.ESTATUS_PEDIDO_EN_RUTA);
+	            pedidoRepository.save(pedido);
 			}
 
 		} catch (IOException e) {
@@ -377,6 +410,14 @@ public class PedidoServiceImpl implements PedidoService {
         int end = json.indexOf("\"", start);
         return json.substring(start, end);
     }
+	@Override
+	public void updatePedido(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		Integer idPedido = (Integer) map.get("idPedido"); 
+		Pedido pedido = pedidoRepository.findById(idPedido).get();
+		pedido.setNumOrdenPago((String) map.get("numOrden"));
+		pedidoRepository.save(pedido);
+	}
 	
 	
 	

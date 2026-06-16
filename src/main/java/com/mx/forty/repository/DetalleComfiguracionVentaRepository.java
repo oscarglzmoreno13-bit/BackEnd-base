@@ -1,5 +1,7 @@
 package com.mx.forty.repository;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +17,9 @@ public interface DetalleComfiguracionVentaRepository extends JpaRepository<Detal
 	@Modifying
 	@Query("DELETE FROM DetalleConfiguracionVenta d WHERE d.configuracion.idConfiguracionVenta = :idConfiguracion")
 	void deleteAllDetails(@Param("idConfiguracion") Integer idConfiguracion);
+	
+	
+	@Query("SELECT DISTINCT c.configuracion.idConfiguracionVenta FROM DetalleConfiguracionVenta c where c.producto.idProducto = :idProducto ")
+	public List<Integer> findCfgByProducto(@Param("idProducto") Integer idProducto);
 
 }

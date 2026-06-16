@@ -15,4 +15,7 @@ public interface ConfiguracionVentaRepository extends JpaRepository<Configuracio
 	
 	@Query("SELECT p  FROM ConfiguracionVenta p WHERE p.campania.idCampania = :idCampania")
 	public List<ConfiguracionVenta> findAllActivesByCampania(@Param("idCampania") Integer idCampania);
+	
+	@Query("SELECT p  FROM ConfiguracionVenta p WHERE p.nombre = :nombre")
+	public ConfiguracionVenta findConfiguracionByName(@Param("nombre") String nombre);
 }

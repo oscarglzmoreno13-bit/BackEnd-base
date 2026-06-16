@@ -27,4 +27,5 @@ public interface PedidoService {
 	public Map<String, Object> savePedido(Map<String, Object> map);
 	public List<Map<String, Object>> findPedidos();
 	public void generaOrdenEnvio(List<Map<String, Object>> listPedidos);
+	public void updatePedido(Map<String, Object> map);
 }
