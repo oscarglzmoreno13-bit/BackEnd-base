@@ -29,7 +29,9 @@ com\mx\forty\Prueba.class
 com\mx\forty\service\EstatusService.class
 com\mx\forty\service\impl\ProductoServiceImpl.class
 com\mx\forty\entity\Pedido.class
+com\mx\forty\dto\vo\PagoEcartPayVo.class
 com\mx\forty\repository\MunicipioRepository.class
+com\mx\forty\util\ApiResponse.class
 com\mx\forty\service\impl\TipoConfiguracionServiceImpl.class
 com\mx\forty\repository\TipoEstatusRepository.class
 com\mx\forty\dto\vo\ConfiguracionVentaVo.class
@@ -49,10 +51,13 @@ com\mx\forty\repository\TipoConfiguracionRepository.class
 com\mx\forty\repository\CampaniaRepository.class
 com\mx\forty\service\impl\CampaniaServiceImpl.class
 com\mx\forty\service\ConfiguracionVentaService.class
+com\mx\forty\integrations\ecartpay\TokenSession.class
 com\mx\forty\restController\ConfiguracionVentaRestController.class
 com\mx\forty\service\impl\TipoEstatusServiceImpl.class
 com\mx\forty\repository\PersonaRepository.class
 com\mx\forty\service\impl\PedidoServiceImpl.class
+com\mx\forty\integrations\ecartpay\AutorizationAndKeyGenerator.class
+com\mx\forty\integrations\ecartpay\EcartPayAppCreator.class
 com\mx\forty\entity\TipoFormaPago.class
 com\mx\forty\controller\TestController.class
 com\mx\forty\dto\vo\ProductoVo.class
@@ -75,6 +80,7 @@ com\mx\forty\repository\FormaPagoRepository.class
 com\mx\forty\util\Constantes.class
 com\mx\forty\dto\vo\DetalleConfiguracionVo.class
 com\mx\forty\repository\DetalleComfiguracionVentaRepository.class
+com\mx\forty\entity\DetallePedido.class
 com\mx\forty\service\ProductoService.class
 com\mx\forty\dto\vo\TipoEstatusVo.class
 com\mx\forty\entity\DireccionPedido.class

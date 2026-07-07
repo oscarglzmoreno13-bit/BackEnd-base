@@ -1,0 +1,1 @@
+org.springframework.boot.logging.LoggingSystem=org.springframework.boot.logging.java.JavaLoggingSystem

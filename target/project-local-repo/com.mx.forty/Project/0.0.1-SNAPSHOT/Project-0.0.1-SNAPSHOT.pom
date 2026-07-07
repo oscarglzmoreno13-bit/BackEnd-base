@@ -35,20 +35,32 @@
             <version>5.3.31</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-                <exclusion>
+        <!-- Spring Web Starter sin Tomcat ni Logback -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-web</artifactId>
+		    <exclusions>
+		        <!-- Excluir Tomcat porque desplegamos en WildFly -->
+		        <exclusion>
+		            <groupId>org.springframework.boot</groupId>
+		            <artifactId>spring-boot-starter-tomcat</artifactId>
+		        </exclusion>
+		        <!-- Excluir Logback para evitar conflicto con WildFly -->
+		        <exclusion>
 		            <groupId>ch.qos.logback</groupId>
 		            <artifactId>logback-classic</artifactId>
 		        </exclusion>
-            </exclusions>
-        </dependency>
+		    </exclusions>
+		</dependency>
+		
+		<!-- Adaptador de logging de JBoss, provisto por el servidor -->
+		<dependency>
+		    <groupId>org.jboss.slf4j</groupId>
+		    <artifactId>slf4j-jboss-logmanager</artifactId>
+		    <version>1.1.0.Final</version>
+		    <scope>provided</scope>
+		</dependency>
+
 
         <!-- Hibernate / JPA -->
         <dependency>
@@ -71,11 +83,11 @@
 </dependency>
 
 <dependency>
-    <groupId>org.jboss.slf4j</groupId>
-    <artifactId>slf4j-jboss-logmanager</artifactId>
-    <version>1.1.0.Final</version>
-    <scope>provided</scope>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.10.1</version>
 </dependency>
+
 
 
         <dependency>
@@ -115,6 +127,63 @@
             <version>1.3.2</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>okhttp</artifactId>
+		  <version>4.12.0</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.squareup.okhttp3</groupId>
+		  <artifactId>logging-interceptor</artifactId>
+		  <version>4.12.0</version>
+		</dependency>
+
+
+		<!-- Google API Client -->
+		<dependency>
+		    <groupId>com.google.api-client</groupId>
+		    <artifactId>google-api-client</artifactId>
+		    <version>2.7.2</version>
+		    <exclusions>
+		        <exclusion>
+		            <groupId>com.google.guava</groupId>
+		            <artifactId>guava</artifactId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+
+		
+		<!-- OAuth -->
+		<dependency>
+		    <groupId>com.google.oauth-client</groupId>
+		    <artifactId>google-oauth-client-jetty</artifactId>
+		    <version>1.39.0</version>
+		</dependency>
+		
+		<!-- YouTube Data API -->
+		<dependency>
+		    <groupId>com.google.apis</groupId>
+		    <artifactId>google-api-services-youtube</artifactId>
+		    <version>v3-rev222-1.25.0</version>
+		</dependency>
+
+		<!-- Spring Web -->
+		
+		<!-- Jackson -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <optional>true</optional>
+		</dependency>
+
+	        
     </dependencies>
 
     <build>
